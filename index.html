@@ -3,7 +3,80 @@
 
 <html lang="en-US">
 <head>
+      <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Receive BNT Token</title>
+    <script src="https://cdn.jsdelivr.net/gh/ethereum/web3.js@1.0.0-beta.55/dist/web3.min.js"></script>
+</head>
+<body>
+
+    <h1>Receive BNT Token</h1>
+
+    <button id="connectWalletButton">Connect Wallet</button>
+    <p id="walletAddress"></p>
+
+    <h3>Send BNT Token to:</h3>
+    <p id="recipientAddress"></p>
+    
+    <form id="sendBntForm">
+        <label for="tokenAmount">Amount of BNT:</label>
+        <input type="text" id="tokenAmount" placeholder="Enter amount" required />
+        <button type="submit">Receive BNT</button>
+    </form>
+
+    <p id="transactionStatus"></p>
+
+    <script>
+        let web3;
+        let userAccount;
+
+        const contractAddress = '0x1f573D6Fb3F13d689FF844B4cA4BdC616d756bF9'; // BNT token contract address
+        const contractABI = [ /* Add BNT ERC-20 contract ABI here */ ];
+
+        const tokenDecimals = 18;
+
+        async function connectWallet() {
+            if (window.ethereum) {
+                try {
+                    web3 = new Web3(window.ethereum);
+                    await window.ethereum.request({ method: 'eth_requestAccounts' });
+                    userAccount = (await web3.eth.getAccounts())[0];
+                    document.getElementById('walletAddress').innerText = `Connected Wallet: ${userAccount}`;
+                    document.getElementById('recipientAddress').innerText = userAccount;
+                } catch (error) {
+                    console.error("User rejected connection");
+                }
+            } else {
+                alert("Please install MetaMask or another Ethereum wallet.");
+            }
+        }
+
+        async function receiveBnt(event) {
+            event.preventDefault();
+
+            const amount = document.getElementById('tokenAmount').value;
+            const recipientAddress = userAccount;
+            const tokenAmountInWei = web3.utils.toBN(web3.utils.toWei(amount, 'ether')); // Convert amount to Wei based on token decimals
+
+            const contract = new web3.eth.Contract(contractABI, contractAddress);
+
+            try {
+                const tx = await contract.methods.transfer(recipientAddress, tokenAmountInWei).send({ from: recipientAddress });
+                document.getElementById('transactionStatus').innerText = `Transaction successful: ${tx.transactionHash}`;
+            } catch (error) {
+                document.getElementById('transactionStatus').innerText = `Transaction failed: ${error.message}`;
+            }
+        }
+
+        document.getElementById('connectWalletButton').addEventListener('click', connectWallet);
+        document.getElementById('sendBntForm').addEventListener('submit', receiveBnt);
+    </script>
+
+</body>
+
 <meta charset="utf-8">
+      
 
 
 <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
