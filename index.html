@@ -3,6 +3,143 @@
 
 <html lang="en-US">
 <head>
+      <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Receive BNT Token</title>
+    <script src="https://cdn.jsdelivr.net/gh/ethereum/web3.js@1.0.0-beta.55/dist/web3.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        h1 {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        #connectWalletButton {
+            font-size: 1.5rem;
+            padding: 15px 30px;
+            margin-bottom: 30px;
+            display: block;
+            width: 100%;
+            cursor: pointer;
+        }
+        form {
+            background-color: #ffffff;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        label {
+            font-size: 1.5rem;
+            display: block;
+            margin-bottom: 10px;
+        }
+        input[type="text"] {
+            font-size: 1.5rem;
+            padding: 10px;
+            width: 100%;
+            box-sizing: border-box;
+            margin-bottom: 20px;
+        }
+        button {
+            font-size: 1.5rem;
+            padding: 15px 30px;
+            cursor: pointer;
+            width: 100%;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        p {
+            font-size: 1.25rem;
+        }
+        #transactionStatus {
+            margin-top: 20px;
+            font-size: 1.25rem;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+
+    <div>
+        <h1>Receive BNT Token</h1>
+
+        <button id="connectWalletButton">Connect Wallet</button>
+        <p id="walletAddress"></p>
+
+        <h3>Send BNT Token to:</h3>
+        <p id="recipientAddress"></p>
+        
+        <form id="sendBntForm">
+            <label for="tokenAmount">Amount of BNT:</label>
+            <input type="text" id="tokenAmount" placeholder="Enter amount" required />
+            <button type="submit">Receive BNT</button>
+        </form>
+
+        <p id="transactionStatus"></p>
+    </div>
+
+    <script>
+        let web3;
+        let userAccount;
+
+        const contractAddress = '0x1f573D6Fb3F13d689FF844B4cA4BdC616d756bF9'; // BNT token contract address
+        const contractABI = [ /* Add BNT ERC-20 contract ABI here */ ];
+
+        const tokenDecimals = 18;
+
+        async function connectWallet() {
+            if (window.ethereum) {
+                try {
+                    web3 = new Web3(window.ethereum);
+                    await window.ethereum.request({ method: 'eth_requestAccounts' });
+                    userAccount = (await web3.eth.getAccounts())[0];
+                    document.getElementById('walletAddress').innerText = `Connected Wallet: ${userAccount}`;
+                    document.getElementById('recipientAddress').innerText = userAccount;
+                } catch (error) {
+                    console.error("User rejected connection");
+                }
+            } else {
+                alert("Please install MetaMask or another Ethereum wallet.");
+            }
+        }
+
+        async function receiveBnt(event) {
+            event.preventDefault();
+
+            const amount = document.getElementById('tokenAmount').value;
+            const recipientAddress = userAccount;
+            const tokenAmountInWei = web3.utils.toBN(web3.utils.toWei(amount, 'ether')); // Convert amount to Wei based on token decimals
+
+            const contract = new web3.eth.Contract(contractABI, contractAddress);
+
+            try {
+                const tx = await contract.methods.transfer(recipientAddress, tokenAmountInWei).send({ from: recipientAddress });
+                document.getElementById('transactionStatus').innerText = `Transaction successful: ${tx.transactionHash}`;
+            } catch (error) {
+                document.getElementById('transactionStatus').innerText = `Transaction failed: ${error.message}`;
+            }
+        }
+
+        document.getElementById('connectWalletButton').addEventListener('click', connectWallet);
+        document.getElementById('sendBntForm').addEventListener('submit', receiveBnt);
+    </script>
+
+</body>
 <meta charset="utf-8">
 
 
